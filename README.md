@@ -82,6 +82,7 @@ The menu is a Panorama layout (`custom_hud_layout`). The client loads it from a 
 
 - Sources: [`workshop/content`](workshop/content) (copy into `csgo_addons/<addon>/`), compiled with the CS2 Workshop Tools.
 - The layout is generated: change [`tools/gen_admin_panorama.py`](tools/gen_admin_panorama.py), not the XML, then run `python tools/gen_admin_panorama.py` and `python tools/validate_panorama.py`. `python tools/validate_lang.py` checks that every translation key the code uses exists in all language files.
+- Browser preview: [`workshop/preview/admin.html`](workshop/preview/admin.html) shows the menu with sample data, built from the real layout, styles and translations ([open it](https://htmlpreview.github.io/?https://github.com/Kandru/cs2-mini-admin/blob/main/workshop/preview/admin.html)). After a change to the layout, styles or translations run `python tools/gen_admin_preview.py` (`--check` reports an outdated file).
 - Write button texts that are not CS2 localization tokens: the client translates such values itself ("Cancel" showed up as "Abbrechen", "CT" as "AT-Seite" on a German client).
 - The menu follows the [cs2-panorama-ruleset](https://github.com/KennyZorro/cs2-panorama-ruleset).
 

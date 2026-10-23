@@ -1,0 +1,112 @@
+/* Panorama layout model in web CSS (preview only - the game is authoritative).
+   flow-children: none = all children stacked in one grid cell, right = flex row, down = flex column.
+   horizontal-align / vertical-align arrive as --ha / --va and are applied by the parent's flow,
+   which preview.js writes to data-flow after every paint. */
+
+@property --pf-display { syntax: "*"; inherits: false; initial-value: grid; }
+@property --flow { syntax: "*"; inherits: false; initial-value: grid; }
+@property --ha { syntax: "*"; inherits: false; initial-value: start; }
+@property --va { syntax: "*"; inherits: false; initial-value: start; }
+/* fill-parent-flow: grow factor along the parent's flow, stretch across it */
+@property --fpw { syntax: "*"; inherits: false; initial-value: 0; }
+@property --fph { syntax: "*"; inherits: false; initial-value: 0; }
+@property --hs { syntax: "*"; inherits: false; }
+@property --vs { syntax: "*"; inherits: false; }
+/* visibility: collapse */
+@property --vis { syntax: "*"; inherits: false; }
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: #0d1520;
+  color: #e8eef4;
+  font-family: "Barlow Condensed", "Roboto Condensed", "Arial Narrow", system-ui, sans-serif;
+  overflow: hidden;
+}
+
+p-panel, p-button, p-label {
+  position: relative;
+  display: var(--vis, var(--pf-display));
+  flex: 0 0 auto;
+  min-width: 0;
+  min-height: 0;
+  color: inherit;
+}
+
+p-label {
+  --pf-display: block;
+  line-height: 1.2;
+  font-size: 16px;
+  color: #f5f7fa;
+}
+
+p-button { cursor: default; user-select: none; }
+[data-hit="false"] { pointer-events: none; }
+p-button [data-hit="false"] { pointer-events: none; }
+
+[data-flow="grid"] { --pf-display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); }
+[data-flow="row"] { --pf-display: flex; flex-direction: row; }
+[data-flow="col"] { --pf-display: flex; flex-direction: column; }
+[data-flow="grid"] > * { grid-area: 1 / 1; justify-self: var(--hs, var(--ha)); align-self: var(--vs, var(--va)); }
+[data-flow="row"] > * { align-self: var(--vs, var(--va)); flex-grow: var(--fpw); flex-shrink: var(--fpw); }
+[data-flow="col"] > * { align-self: var(--hs, var(--ha)); flex-grow: var(--fph); flex-shrink: var(--fph); }
+
+.stratum-bold-tf { font-weight: 600; }
+.stratum-medium-tf { font-weight: 500; }
+
+/* stage: the 1920x1080 reference screen, scaled to the window */
+.pv-viewport { position: fixed; inset: 44px 0 0 0; overflow: hidden; }
+.pv-stage {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1920px;
+  height: 1080px;
+  transform-origin: 0 0;
+  background:
+    radial-gradient(ellipse 80% 55% at 50% 40%, #2a3a4a66 0%, transparent 70%),
+    linear-gradient(160deg, #1f2c3a 0%, #0d1520 45%, #1a2534 100%);
+  display: grid;
+}
+.pv-stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.05;
+  background-image: radial-gradient(#ffffff 0.7px, transparent 0.7px);
+  background-size: 14px 14px;
+  pointer-events: none;
+}
+
+/* preview bar (not part of the layout) */
+.pv-bar {
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 16px;
+  background: #090c10;
+  border-bottom: 1px solid #ffffff1f;
+  font: 500 15px/1.2 system-ui, sans-serif;
+  color: #a3acb6;
+  z-index: 10;
+}
+.pv-bar b { color: #f5f7fa; font-weight: 600; }
+.pv-bar .pv-grow { flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.pv-bar button, .pv-bar select {
+  font: inherit;
+  color: #e8eef4;
+  background: #ffffff0d;
+  border: 1px solid #ffffff33;
+  padding: 4px 10px;
+  cursor: pointer;
+}
+.pv-bar button:hover, .pv-bar select:hover { border-color: #f0a531; }
+.pv-reopen { display: none; }
+.pv-closed .pv-reopen { display: inline-block; }
+.pv-shot .pv-bar { display: none; }
+.pv-shot .pv-viewport { inset: 0; }
